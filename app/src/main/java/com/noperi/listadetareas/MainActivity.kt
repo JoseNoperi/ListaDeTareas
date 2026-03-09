@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.noperi.listadetareas.ui.screens.TaskListScreen
+import com.noperi.listadetareas.ui.TaskApp
 import com.noperi.listadetareas.ui.theme.ListaDeTareasTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ListaDeTareasTheme {
-                TaskListScreen()
+                TaskApp()
             }
         }
     }
