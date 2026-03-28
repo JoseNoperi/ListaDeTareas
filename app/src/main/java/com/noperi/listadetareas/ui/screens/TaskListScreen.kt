@@ -3,31 +3,79 @@ package com.noperi.listadetareas.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.noperi.listadetareas.domain.Task
 
 @Composable
-fun TaskListScreen() {
-    val sampleTasks = listOf(
-        Task(id = 1, title = "Ir a la UES"),
-        Task(id = 2, title = "Hacer tarea de Moviles Android"),
-        Task(id = 3, title = "Estudiar Diseño Responsivo")
-    )
+fun TaskListScreenContent(
+    tasks: List<Task>,
+    onToggleDone: (Task) -> Unit,
+    onEditTask: (Task) -> Unit
+) {
+    if (tasks.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("No hay tareas en esta sección", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(tasks) { task ->
+                TaskItem(task = task, onToggleDone = { onToggleDone(task) }, onEdit = { onEditTask(task) })
+            }
+        }
+    }
+}
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+@Composable
+fun TaskItem(task: Task, onToggleDone: () -> Unit, onEdit: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        items(sampleTasks) { task ->
-            Text(
-                text = task.title,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+        Row(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                if (task.isDone) {
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Completada", tint = Color(0xFF4CAF50))
+                } else {
+                    Icon(Icons.Default.Warning, contentDescription = "Pendiente", tint = Color(0xFFFF9800))
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(text = task.title, style = MaterialTheme.typography.titleMedium)
+                    if (task.description.isNotBlank()) {
+                        Text(text = task.description, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    }
+                }
+            }
+            Row {
+                IconButton(onClick = onToggleDone) {
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Cambiar estado", tint = if (task.isDone) Color(0xFF4CAF50) else Color.LightGray)
+                }
+                IconButton(onClick = onEdit, enabled = !task.isDone) {
+                    Icon(Icons.Default.Edit, contentDescription = "Editar", tint = if (task.isDone) Color.LightGray else MaterialTheme.colorScheme.primary)
+                }
+            }
         }
     }
 }
