@@ -4,13 +4,17 @@ import com.noperi.listadetareas.data.TaskDao
 import com.noperi.listadetareas.data.TaskEntity
 import com.noperi.listadetareas.domain.Task
 import com.noperi.listadetareas.domain.TaskRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class TaskRepositoryImpl(
     private val dao: TaskDao
 ) : TaskRepository {
-    override suspend fun getTasks(): List<Task> {
-        return dao.getTasks().map {
-            Task(id = it.id, title = it.title, description = it.description, isDone = it.isDone)
+    override fun getTasks(): Flow<List<Task>> {
+        return dao.getTasks().map { entities ->
+            entities.map { entity ->
+                Task(id = entity.id, title = entity.title, description = entity.description, isDone = entity.isDone)
+            }
         }
     }
 

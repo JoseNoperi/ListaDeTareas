@@ -1,4 +1,5 @@
 package com.noperi.listadetareas.ui
+import com.noperi.listadetareas.data.TaskViewModel
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskApp() {
+fun TaskApp(viewModel: TaskViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 

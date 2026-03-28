@@ -1,40 +1,40 @@
 package com.noperi.listadetareas
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.lifecycleScope
+import androidx.activity.viewModels
 import androidx.room.Room
 import com.noperi.listadetareas.data.AppDatabase
-import com.noperi.listadetareas.data.TaskEntity
+import com.noperi.listadetareas.data.TaskViewModel
+import com.noperi.listadetareas.data.TaskViewModelFactory
+import com.noperi.listadetareas.data.repository.TaskRepositoryImpl
 import com.noperi.listadetareas.ui.TaskApp
 import com.noperi.listadetareas.ui.theme.ListaDeTareasTheme
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
-        val db = Room.databaseBuilder(
+    private val db by lazy {
+        Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "tasks_db"
         ).build()
+    }
 
-        val dao = db.taskDao()
+    private val repository by lazy { TaskRepositoryImpl(db.taskDao()) }
 
-        lifecycleScope.launch {
-            dao.insertTask(TaskEntity(title = "Prueba 1"))
-            val items = dao.getTasks()
-            Log.d("ROOM", "Tareas almacenadas: $items")
-        }
+    private val viewModel: TaskViewModel by viewModels {
+        TaskViewModelFactory(repository)
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             ListaDeTareasTheme {
-                TaskApp()
+                TaskApp(viewModel)
             }
         }
     }
